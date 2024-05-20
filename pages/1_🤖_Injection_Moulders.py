@@ -1,45 +1,56 @@
 import streamlit as st
 import time
 import numpy as np
+import uuid 
+from google.cloud import firestore
+from google.oauth2 import service_account
+import json
+
+key_dict = json.loads(st.secrets["textkey"]["textkey"]) #json.loads(st.secrets["textkey"])
+print("here is textkey ")
+print(key_dict)
+creds = service_account.Credentials.from_service_account_info(key_dict)
+db = firestore.Client(credentials=creds, project="mouldshop-management")
 
 st.set_page_config(page_title="Injection Moulders", page_icon="🤖")
 
 st.markdown("# Injection Moulders")
 st.sidebar.header("Injection Moulders")
 
-selected_option = st.selectbox("Select an Machine Option", ["320 Ton", "240 Ton", "200 Ton"])
+st.title("Form Input for Dictionary")
 
-# Display the selected option
-st.write("You selected:", selected_option)
+    # Define the dictionary keys and their corresponding input types
+input_fields = {
+        "circulator-on": {"label": "Circulator On", "type": "boolean"},
+        "circulator-temp": {"label": "Circulator Temperature (°C)", "type": "number"},
+        "part-name": {"label": "Part Name", "type": "text"},
+        "reject-parts": {"label": "Reject Parts", "type": "number"},
+        "unit-weight-kg": {"label": "Unit Weight (kg)", "type": "number"},
+        "wastage-kg": {"label": "Wastage (kg)", "type": "number"}
+    }
 
-machine_specs = {
-    "Machine A": {"Capacity": "100 tons", "Max Shot Size": "200 grams", "Manufacturer": "Manufacturer A"},
-    "Machine B": {"Capacity": "150 tons", "Max Shot Size": "300 grams", "Manufacturer": "Manufacturer B"},
-    "Machine C": {"Capacity": "200 tons", "Max Shot Size": "400 grams", "Manufacturer": "Manufacturer C"}
-}
+# Create form inputs dynamically based on the dictionary
+form_data = {}
+for key, value in input_fields.items():
+    print(key)
+    input_type = value["type"]
+    print(input_type)
+    label = value["label"]
+    print(label)
 
-# Create a dropdown menu to select the injection moulder machine
-selected_machine = st.selectbox("Select Injection Moulder Machine", list(machine_specs.keys()))
+    if input_type == "boolean":
+        form_data[key] = st.checkbox(label, key=key)
+    elif input_type == "number":
+        form_data[key] = st.number_input(label, key=key)
+    elif input_type == "text":
+        form_data[key] = st.text_input(label, key=key)
 
-# Display the selected machine's specifications
-if selected_machine:
-    st.write("Specifications for", selected_machine)
-    st.write("Capacity:", machine_specs[selected_machine]["Capacity"])
-    st.write("Max Shot Size:", machine_specs[selected_machine]["Max Shot Size"])
-    st.write("Manufacturer:", machine_specs[selected_machine]["Manufacturer"])
+    
+if st.button("Submit"):
+    document_id = str(uuid.uuid4())
+    doc_ref = db.collection("320ton").document(document_id)
+    doc_ref.set(form_data)   
 
-    # Add a submission form based on the selected machine
-    st.subheader("Submit Form for " + selected_machine)
-    with st.form(key='machine_form'):
-        # Add form fields
-        part_name = st.text_input("Part Name")
-        part_quantity = st.number_input("Part Quantity", min_value=1)
-        submit_button = st.form_submit_button(label='Submit')
-
-    # Process form submission
-    if submit_button:
-        # Print submitted form data
-        st.write("Submitted Form Data:")
-        st.write("Part Name:", part_name)
-        st.write("Part Quantity:", part_quantity)
-
+        # Display the submitted form data
+    st.write("Submitted Form Data:", form_data)
+        

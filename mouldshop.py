@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon="👷🏼‍♂️",
 )
 
-st.write("# Welcome to the Sinapi Mouldshop Management 👋")
+st.write("# Welcome Stephan to the Sinapi Mouldshop Management 👋")
 
 # Authenticate to Firestore with the JSON account key.
 # db = firestore.Client.from_service_account_json("mouldshop_key.json")
@@ -30,6 +30,25 @@ st.write("The id is: ", doc.id)
 st.write("The contents are: ", doc.to_dict())
 # st.sidebar.success("Select a demo above.")
 
+ #new code 
+ 
+# This time, we're creating a NEW post reference for Apple
+doc_ref = db.collection("320ton").document("new-random-id")
+
+# And then uploading some data to that reference
+doc_ref.set({
+    "circulator-on" : True,
+
+    "circulator-temp" : 25,
+
+    "part-name" : "TUB017",
+
+    "reject-parts" :5,
+
+    "unit-weight-kg" : 500,
+
+    "wastage-kg" : 20,
+})
 # st.markdown(
 #     """
 #     Streamlit is an open-source app framework built specifically for
