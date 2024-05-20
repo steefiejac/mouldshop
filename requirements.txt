@@ -1,3 +1,4 @@
 streamlit
 google-cloud-firestore
 google.oauth
+st-gsheets-connection
