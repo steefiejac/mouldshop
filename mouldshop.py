@@ -1,5 +1,7 @@
 import streamlit as st
 from google.cloud import firestore
+# from google.auth import service_account
+from google.oauth2 import service_account
 import json
 
 st.set_page_config(
@@ -11,9 +13,11 @@ st.write("# Welcome to the Sinapi Mouldshop Management 👋")
 
 # Authenticate to Firestore with the JSON account key.
 # db = firestore.Client.from_service_account_json("mouldshop_key.json")
+# Install the dependency: e.g., pip install google-auth-oauthlib
+
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
-db = firestore.Client(credentials=creds, project="streamlit-reddit")
+db = firestore.Client(credentials=creds, project="mouldshop-management")
 
 # Create a reference to the Google post.
 doc_ref = db.collection("320ton").document("Iz9lWxifLYCnrikrBE0K")
