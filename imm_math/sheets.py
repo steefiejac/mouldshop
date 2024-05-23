@@ -41,4 +41,6 @@ def immparts(imm):
         column = "UN120A5 (120t) ShWt=246.9" 
     elif imm == "8. 90ton":
         column = "UN90A5 (90t) ShWt=158.7"   
-    return list(moulding_parts[moulding_parts[column]==1]["Sinapi Alias"])
+    numeric_values = pd.to_numeric(moulding_parts[column], errors='coerce')
+    valid_numeric_rows = moulding_parts[pd.notnull(numeric_values)]["Sinapi Alias"]
+    return list(valid_numeric_rows)
