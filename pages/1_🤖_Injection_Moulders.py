@@ -1,3 +1,4 @@
+from datetime import datetime
 import streamlit as st
 st.set_page_config(page_title="Injection Moulders", page_icon="🤖")
 import time
@@ -28,8 +29,8 @@ option = st.selectbox(
 
 # Display the selected option
 st.write('You selected imm number:', option)
-st.write(moulding_parts)
-st.write(immparts(option))
+# st.write(moulding_parts)
+# st.write(immparts(option))
 
 
     # Define the dictionary keys and their corresponding input types
@@ -38,7 +39,7 @@ input_fields = {
         "circulator-temp": {"label": "Circulator Temperature (°C)", "type": "number"},
         "part-name": {"label": "Part Name", "type": "text"},
         "reject-parts": {"label": "Reject Parts", "type": "number"},
-        "unit-weight-kg": {"label": "Unit Weight (kg)", "type": "number"},
+        "unit-weight-kg": {"label": "Unit Weight (g)", "type": "number"},
         "wastage-kg": {"label": "Wastage (kg)", "type": "number"}
     }
 
@@ -54,14 +55,18 @@ for key, value in input_fields.items():
     if input_type == "boolean":
         form_data[key] = st.checkbox(label, key=key)
     elif input_type == "number":
-        form_data[key] = st.number_input(label, key=key)
+        form_data[key] = st.number_input(label,value=None,format="%.2f", key=key)
     elif input_type == "text":
         form_data[key] = st.selectbox(label, immparts(option),key=key)
 
     
 if st.button("Submit"):
+    # sa_tz = pytz.timezone('Africa/Johannesburg')  # Set South African timezone
+    # now_sa = datetime.now(sa_tz)  # Get current time in South African timezone
+    # form_data["timestamp"] = now_sa.strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp as string
+    form_data["timestamp"] = datetime.now()
     document_id = str(uuid.uuid4())
-    doc_ref = db.collection("320ton").document(document_id)
+    doc_ref = db.collection(option).document(document_id)
     doc_ref.set(form_data)   
 
         # Display the submitted form data
